@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/group_login"
+        android:layout_marginTop="30dp"
+        android:layout_centerHorizontal="true">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="220dp"
+            android:layout_height="wrap_content">
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:id="@+id/input_email"
+                android:hint="Email"
+                android:maxLines="1"
+                android:inputType="textEmailAddress" />
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="10dp"
+                android:id="@+id/input_password"
+                android:hint="Password"
+                android:maxLines="1"
+                android:inputType="textPassword" />
+
+        </LinearLayout>
+
+        <Button
+            android:layout_width="75dp"
+            android:layout_height="90dp"
+            android:layout_marginLeft="5dp"
+            android:textAllCaps="false"
+            android:id="@+id/btn_login"
+            android:text="Next"/>
+    </LinearLayout>
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Stay signed in"
+        android:id="@+id/check_signed_in"
+        android:textAllCaps="false"
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/group_login"
+        android:layout_alignLeft="@id/group_login"
+        android:layout_alignStart="@id/group_login" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="/"
+        android:id="@+id/txt_slash"
+        android:layout_marginLeft="20dp"
+        android:layout_alignBaseline="@id/check_signed_in"
+        android:layout_toRightOf="@id/check_signed_in" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sign up"
+        android:id="@+id/btn_signup"
+        android:textAllCaps="false"
+        android:layout_marginLeft="20dp"
+        android:layout_alignBaseline="@id/txt_slash"
+        android:layout_toRightOf="@id/txt_slash" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Having trouble logging in?"
+        android:id="@+id/btn_trouble"
+        android:textAllCaps="false"
+        android:layout_marginTop="2dp"
+        android:layout_marginLeft="5dp"
+        android:layout_below="@id/check_signed_in"
+        android:layout_alignLeft="@id/check_signed_in"
+        android:layout_alignStart="@id/check_signed_in" />
+
+    <View
+        android:layout_width="97dp"
+        android:layout_height="1dip"
+        android:id="@+id/line_split1"
+        android:layout_marginTop="30dp"
+        android:layout_below="@id/btn_trouble"
+        android:layout_alignLeft="@id/check_signed_in"
+        android:layout_alignStart="@id/check_signed_in"
+        android:background="#555555"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/txt_split"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="10dp"
+        android:layout_below="@id/btn_trouble"
+        android:layout_toRightOf="@id/line_split1"
+        android:layout_alignBaseline="@id/line_split1"
+        android:text="or Login with"/>
+
+    <View
+        android:layout_width="97dp"
+        android:layout_height="1dip"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@id/txt_split"
+        android:layout_alignBottom="@id/line_split1"
+        android:background="#555555"/>
+
+    <Button
+        android:layout_width="90dp"
+        android:layout_height="45dp"
+        android:text="Facebook"
+        android:textColor="#ffffff"
+        android:background="#526DA8"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:id="@+id/btn_facebook"
+        android:textAllCaps="false"
+        android:layout_marginTop="20dp"
+        android:layout_below="@id/line_split1"
+        android:layout_alignLeft="@id/line_split1"
+        android:layout_alignStart="@id/line_split1"
+        style="@style/Widget.AppCompat.Button.Colored" />
+
+    <Button
+        android:layout_width="90dp"
+        android:layout_height="45dp"
+        android:text="Google+"
+        android:textColor="#ffffff"
+        android:background="#E94B37"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:id="@+id/btn_google"
+        android:textAllCaps="false"
+        android:layout_marginLeft="15dp"
+        android:layout_toRightOf="@id/btn_facebook"
+        android:layout_alignBaseline="@id/btn_facebook"
+        style="@style/Widget.AppCompat.Button.Colored" />
+
+    <Button
+        android:layout_width="90dp"
+        android:layout_height="45dp"
+        android:text="Twitter"
+        android:textColor="#ffffff"
+        android:background="#36C6FE"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:id="@+id/btn_twitter"
+        android:textAllCaps="false"
+        android:layout_marginLeft="15dp"
+        android:layout_toRightOf="@id/btn_google"
+        android:layout_alignBaseline="@id/btn_google" />
+
+</RelativeLayout>
