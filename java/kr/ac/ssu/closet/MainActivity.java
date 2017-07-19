@@ -10,6 +10,7 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity {
 
     ImageView imgLogo;
+    TextView jay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         imgLogo = (ImageView)findViewById(R.id.img_logo);
+        jay = (TextView)findViewById(R.id.jay);
 
         imgLogo.setOnClickListener(
                 new TextView.OnClickListener() {
@@ -26,5 +28,15 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(intent);
                     }
                 });
+
+        jay.setOnClickListener(
+                new TextView.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(MainActivity.this, DateActivity.class);
+                        startActivity(intent);
+                    }
+                }
+        );
     }
 }
