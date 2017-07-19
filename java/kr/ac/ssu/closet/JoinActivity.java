@@ -12,7 +12,6 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,14 +22,14 @@ import java.util.regex.Pattern;
 
 public class JoinActivity extends AppCompatActivity {
 
-    EditText etNameFirst, etNameLast, etEmail, etPassword, etPasswordConfirm;
-    RadioGroup rgGender;
-    Button btnBirth, btnJoin;
-    TextView txtAgree;
+    private EditText etNameFirst, etNameLast, etEmail, etPassword, etPasswordConfirm;
+    private RadioGroup rgGender;
+    private Button btnBirth, btnJoin;
+    private TextView txtAgree;
 
-    String nameFirst, nameLast, email, password, passwordConfirm;
-    int gender; // Female:1, Male:2
-    int birthY=1990, birthM=1, birthD=1;
+    protected String nameFirst, nameLast, email, password, passwordConfirm;
+    protected int gender; // Female:1, Male:2
+    private int birthY=1990, birthM=0, birthD=1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +45,9 @@ public class JoinActivity extends AppCompatActivity {
         btnBirth = (Button)findViewById(R.id.new_birthday);
         txtAgree = (TextView)findViewById(R.id.new_agree);
         btnJoin = (Button)findViewById(R.id.btn_join_confirm);
+
+        btnJoin.setEnabled(false);
+        /* TODO: if !(edittext error exist or length==0) setEnabled(true) */
 
         etNameFirst.addTextChangedListener(new TextWatcher() {
             @Override
@@ -109,6 +111,7 @@ public class JoinActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
                 int len = s.toString().length();
                 if(len > 6) {
+                    /* TODO: check combination condition of password */
                     /* TODO: password = s.toString().hashing */
                     password = s.toString();
                 } else {
@@ -179,7 +182,7 @@ public class JoinActivity extends AppCompatActivity {
                 gender = rgGender.getCheckedRadioButtonId();
 
                 /* TODO: Save data to server DB */
-                Toast.makeText(JoinActivity.this, nameFirst +"/"+ nameLast +"/"+ email +"/"+ gender, Toast.LENGTH_SHORT).show();
+                // Toast.makeText(JoinActivity.this, nameFirst +"/"+ nameLast +"/"+ email +"/"+ gender, Toast.LENGTH_SHORT).show();
             }
         });
     }
