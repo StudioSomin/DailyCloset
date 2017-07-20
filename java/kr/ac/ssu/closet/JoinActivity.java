@@ -32,7 +32,7 @@ public class JoinActivity extends AppCompatActivity {
     private String nameFirst, nameLast, email, password, passwordConfirm;
     private int birthY=1990, birthM=0, birthD=1;
     private boolean isBirthSet;
-    protected int gender; // Female:1, Male:2
+    private int gender; // Female:1, Male:2
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!--TODO: Overlap button with frame => hide border between button(selected) and frame-->
+    <RadioGroup
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/group_tab">
+        <!--TODO: Overlap buttons with another button-->
+        <RadioButton
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:background="@drawable/selector_tab"
+
+            android:gravity="center"
+            android:id="@+id/tab_today"
+            android:text="today's look" />
+        <RadioButton
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:background="@drawable/selector_tab"
+            android:gravity="center"
+            android:id="@+id/tab_calendar"
+            android:text="calendar" />
+        <RadioButton
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:background="@drawable/selector_tab"
+            android:gravity="center"
+            android:id="@+id/tab_closet"
+            android:text="my closet" />
+    </RadioGroup>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/frame" />
+    
+</LinearLayout>
