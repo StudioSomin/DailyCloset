@@ -139,7 +139,7 @@ public class JoinActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 /* TODO: Compare hashed PW and PW(Confirm) */
-                password = s.toString();
+                password = etPassword.getText().toString();
                 passwordConfirm = s.toString();
                 if(password.compareTo(passwordConfirm) != 0)
                     etPasswordConfirm.setError("Password does not match the confirm password.");
