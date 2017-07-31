@@ -11,22 +11,29 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="closet.ssu.ac.kr.intentfilter.loginview" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity android:name=".JoinActivity">
             <intent-filter>
                 <action android:name="closet.ssu.ac.kr.intentfilter.joinview" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+<<<<<<< HEAD
         <activity android:name=".BinderActivity" />
+=======
+        <activity android:name=".DateActivity"></activity>
+>>>>>>> a2615c2a887e9a76daaf21116c77c4aa7f0d85f9
     </application>
 
 </manifest>
