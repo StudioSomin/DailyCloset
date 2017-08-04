@@ -19,7 +19,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private String[][] member = {
+    public static String[][] member = {
             {"soeun@somin.com", "12345678"},
             {"jongmin@somin.com", "12345678"},
 //            {"apple@pie.com", "12345678"},
@@ -32,7 +32,7 @@ public class LoginActivity extends AppCompatActivity {
 //            {"honey@comb.com", "12345678"},
 //            {"icecream@sandwich.com", "12345678"}
     };
-    private int memberCount = member.length;
+    public static int memberCount = member.length;
     private EditText etEmail, etPassword;
     private Button btnLogin;
     private CheckBox chkSigned;
@@ -86,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
                             if(inputHash.compareTo(originHash) == 0)
                                 startActivity(new Intent(LoginActivity.this, BinderActivity.class));
                             else
-                                Toast.makeText(LoginActivity.this, "불일치", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(LoginActivity.this, "origin: " + originHash + "\n" + "input: " + inputHash, Toast.LENGTH_SHORT).show();
                         }catch (NoSuchAlgorithmException e) {
                             e.printStackTrace();
                         }

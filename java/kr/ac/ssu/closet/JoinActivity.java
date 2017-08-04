@@ -13,7 +13,6 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,9 +28,11 @@ public class JoinActivity extends AppCompatActivity {
     private RadioGroup rgGender;
     private TextView txtAgree;
 
-    private String nameFirst, nameLast, email, password, passwordConfirm;
+    private String nameFirst, nameLast, email;
+    private String password = null, passwordConfirm = null;
     private int birthY=1990, birthM=0, birthD=1;
     private boolean isBirthSet;
+    private boolean isPassConfEnabled = false;
     private int gender; // Female:1, Male:2
 
     @Override
@@ -50,6 +51,8 @@ public class JoinActivity extends AppCompatActivity {
         btnJoin = (Button)findViewById(R.id.btn_join_confirm);
 
         btnJoin.setEnabled(false);
+
+        etPasswordConfirm.setEnabled(isPassConfEnabled);
 
         etNameFirst.addTextChangedListener(new TextWatcher() {
             @Override
@@ -102,6 +105,11 @@ public class JoinActivity extends AppCompatActivity {
                 /* TODO: Check validity of email address */
                 if(s.toString().length()<1)
                     etEmail.setError("What's your email address?");
+
+                for(int i = 0; i < LoginActivity.memberCount; i++) {
+                    if(s.toString().compareTo(LoginActivity.member[i][0]) == 0)
+                        etEmail.setError("Duplicated email");
+                }
                 checkAllContentsFilled();
             }
         });
@@ -121,10 +129,22 @@ public class JoinActivity extends AppCompatActivity {
                     /* TODO: Check combination condition of password */
                     /* TODO: password = s.toString().hashing */
                     etPassword.setError("Enter a combination of at least seven numbers, letters, and punctuation marks.");
+                    isPassConfEnabled = false;
+                    etPasswordConfirm.setEnabled(isPassConfEnabled);
+                    etPasswordConfirm.setText(null);
+                    etPasswordConfirm.setError(null);
+                }
+                else {
+                    isPassConfEnabled = true;
+                    etPasswordConfirm.setEnabled(isPassConfEnabled);
+                    password = s.toString();
+                    passwordConfirm = etPasswordConfirm.getText().toString();
+                    checkPassword(password, passwordConfirm);
                 }
                 checkAllContentsFilled();
             }
         });
+
         etPasswordConfirm.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -141,8 +161,7 @@ public class JoinActivity extends AppCompatActivity {
                 /* TODO: Compare hashed PW and PW(Confirm) */
                 password = etPassword.getText().toString();
                 passwordConfirm = s.toString();
-                if(password.compareTo(passwordConfirm) != 0)
-                    etPasswordConfirm.setError("Password does not match the confirm password.");
+                checkPassword(password, passwordConfirm);
                 checkAllContentsFilled();
             }
         });
@@ -213,6 +232,13 @@ public class JoinActivity extends AppCompatActivity {
                 || rgGender.getCheckedRadioButtonId() == -1 || !isBirthSet) {
             btnJoin.setEnabled(false);
         } else btnJoin.setEnabled(true);
+    }
+
+    private void checkPassword(String pw, String pwc) {
+        if((pw == null && pwc == null) || pw.compareTo(pwc) != 0)
+            etPasswordConfirm.setError("Password does not match the confirm password.");
+        else
+            etPasswordConfirm.setError(null);
     }
 }
 
