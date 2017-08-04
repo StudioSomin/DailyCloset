@@ -12,6 +12,19 @@ import android.widget.Toast;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
+
 
 /**
  * Created by soeun on 2017. 7. 17..
@@ -19,9 +32,14 @@ import java.security.NoSuchAlgorithmException;
 
 public class LoginActivity extends AppCompatActivity {
 
-    public static String[][] member = {
-            {"soeun@somin.com", "12345678"},
-            {"jongmin@somin.com", "12345678"},
+    static HashMap<String, Info> member = new HashMap<String, Info>();
+    private Info info;
+    private String email;
+//    static int memberCount;
+
+//    public static String[][] member = {
+//            {"soeun@somin.com", "12345678"},
+//            {"jongmin@somin.com", "12345678"},
 //            {"apple@pie.com", "12345678"},
 //            {"banana@bread.com", "12345678"},
 //            {"cup@cake.com", "12345678"},
@@ -31,67 +49,106 @@ public class LoginActivity extends AppCompatActivity {
 //            {"ginger@bread.com", "12345678"},
 //            {"honey@comb.com", "12345678"},
 //            {"icecream@sandwich.com", "12345678"}
-    };
-    public static int memberCount = member.length;
+//    };
+
     private EditText etEmail, etPassword;
     private Button btnLogin;
     private CheckBox chkSigned;
     private TextView btnSignup;
+
+    private CallbackManager callbackManager;
+
+    private Button btnFacebook;
+    private Button btnGoogle;
+    private Button btnTwitter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        email = "soeun@somin.com";
+        info = new Info("Soeun", "Lee", Info.hash("12345678"+email), 1995, 4, 11, 1);
+        member.put(email, info);
+
+        email = "jongmin@somin.com";
+        info = new Info("Jongmin", "Chae", Info.hash("12345678"+email), 1992, 9, 24, 2);
+        member.put(email, info);
+
+//        memberCount = member.size();
+
         etEmail = (EditText) findViewById(R.id.input_email);
         etPassword = (EditText) findViewById(R.id.input_password);
         btnLogin = (Button) findViewById(R.id.btn_login);
         chkSigned = (CheckBox) findViewById(R.id.check_signed_in);
         btnSignup = (TextView)findViewById(R.id.btn_signup);
+        btnFacebook = (Button)findViewById(R.id.btn_facebook);
+        btnGoogle = (Button)findViewById(R.id.btn_google);
+        btnTwitter = (Button)findViewById(R.id.btn_twitter);
+
+        /* Facebook Login */
+//        btnFacebook.setReadPermissions("email");
+        btnFacebook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FacebookSdk.sdkInitialize(getApplicationContext());
+                AppEventsLogger.activateApp(getApplicationContext());
+                callbackManager = CallbackManager.Factory.create();
+
+                LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+
+                    }
+
+                    @Override
+                    public void onCancel() {
+
+                    }
+
+                    @Override
+                    public void onError(FacebookException error) {
+
+                    }
+                });
+                LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this, Arrays.asList("public_profile", "email"));
+
+            }
+        });
+
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /* TODO: Make searching(email) faster */
+                /* TODO: Save hashed password */
                 String email = etEmail.getText().toString();
                 String password = etPassword.getText().toString();
-                for(int i=0; i<memberCount; i++) {
-//                    if(email.compareTo(member[i][0]) == 0 && password.compareTo(member[i][1]) == 0)
-//                        startActivity(new Intent(LoginActivity.this, BinderActivity.class));
-                    if(email.compareTo(member[i][0]) == 0) {
-                        String input = password + email;
-                        String origin = member[i][1] + member[i][0];
-                        String inputHash = "";
-                        String originHash = "";
+                if(member.get(email) == null) return;
 
-                        try {
-                            MessageDigest inputMd = MessageDigest.getInstance("SHA-256");
-                            MessageDigest originMd = MessageDigest.getInstance("SHA-256");
-                            inputMd.update(input.getBytes());
-                            originMd.update(origin.getBytes());
+                String inputHash = Info.hash(password + email);
+                String originHash = member.get(email).getPasswordHashed();
 
-                            byte inputByteData[] = inputMd.digest();
-                            byte originByteData[] = originMd.digest();
-                            StringBuffer inputSb = new StringBuffer();
-                            StringBuffer originSb = new StringBuffer();
+//                try {
+//                    MessageDigest inputMd = MessageDigest.getInstance("SHA-256");
+//                    inputMd.update(input.getBytes());
+//
+//                    byte inputByteData[] = inputMd.digest();
+//                    StringBuffer inputSb = new StringBuffer();
+//
+//                    for(int j = 0; j < inputByteData.length; j++)
+//                        inputSb.append(Integer.toString((inputByteData[j]&0xff) + 0x100, 16).substring(1));
+//
+//                    inputHash = inputSb.toString();
 
-                            for(int j = 0; j < inputByteData.length; j++) {
-                                inputSb.append(Integer.toString((inputByteData[i]&0xff) + 0x100, 16).substring(1));
-                                originSb.append(Integer.toString((originByteData[i]&0xff) + 0x100, 16).substring(1));
-                            }
+                if(inputHash.compareTo(originHash) == 0)
+                    startActivity(new Intent(LoginActivity.this, BinderActivity.class));
+                else
+                    Toast.makeText(LoginActivity.this, "origin: " + originHash + "\n"
+                            + "input: " + inputHash, Toast.LENGTH_SHORT).show();
 
-                            inputHash = inputSb.toString();
-                            originHash = originSb.toString();
-
-                            if(inputHash.compareTo(originHash) == 0)
-                                startActivity(new Intent(LoginActivity.this, BinderActivity.class));
-                            else
-                                Toast.makeText(LoginActivity.this, "origin: " + originHash + "\n" + "input: " + inputHash, Toast.LENGTH_SHORT).show();
-                        }catch (NoSuchAlgorithmException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
+//                }catch (NoSuchAlgorithmException e) {
+//                    e.printStackTrace();
+//                }
             }
         });
 
@@ -103,7 +160,16 @@ public class LoginActivity extends AppCompatActivity {
                         startActivity(intent);
                     }
                 });
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        callbackManager.onActivityResult(requestCode, resultCode, data);
+//    }
+
     }
+
+
+
 
 //    private int getUserID(String email) {
 //        for(int i=0; i<memberCount; i++)

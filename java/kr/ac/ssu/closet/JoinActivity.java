@@ -106,10 +106,11 @@ public class JoinActivity extends AppCompatActivity {
                 if(s.toString().length()<1)
                     etEmail.setError("What's your email address?");
 
-                for(int i = 0; i < LoginActivity.memberCount; i++) {
-                    if(s.toString().compareTo(LoginActivity.member[i][0]) == 0)
+//                for(int i = 0; i < LoginActivity.memberCount; i++) {
+                    if(LoginActivity.member.get(s.toString()) == null)
+//                    if(s.toString().compareTo(LoginActivity.member[i][0]) == 0)
                         etEmail.setError("Duplicated email");
-                }
+//                }
                 checkAllContentsFilled();
             }
         });
