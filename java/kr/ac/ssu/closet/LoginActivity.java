@@ -3,6 +3,7 @@ package kr.ac.ssu.closet;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -16,6 +17,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -65,6 +67,8 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext()); // 페이스북 SDK 초기화
+
         setContentView(R.layout.activity_login);
 
         email = "soeun@somin.com";
@@ -87,35 +91,37 @@ public class LoginActivity extends AppCompatActivity {
         btnTwitter = (Button)findViewById(R.id.btn_twitter);
 
         /* Facebook Login */
-//        btnFacebook.setReadPermissions("email");
+        callbackManager = CallbackManager.Factory.create();
         btnFacebook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FacebookSdk.sdkInitialize(getApplicationContext());
-                AppEventsLogger.activateApp(getApplicationContext());
-                callbackManager = CallbackManager.Factory.create();
-
-                LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+                LoginManager.getInstance().logInWithReadPermissions(
+                        LoginActivity.this,
+                        Arrays.asList("public_profile", "user_friends", "email")
+                );
+                LoginManager.getInstance().registerCallback(
+                        callbackManager, new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
-
+                        /* TODO: id 멤버 DB에 저장 */
+                        /* TODO: 페이스북 공개 프로필에서 필요한 정보 못 찾으면 따로 요청 */
+                        Log.e("Facebook", "onSuccess");
+                        Log.d("Facebook", "user id : " + AccessToken.getCurrentAccessToken().getUserId());
+                        startActivity(new Intent(LoginActivity.this, BinderActivity.class));
                     }
 
                     @Override
                     public void onCancel() {
-
+                        Log.e("Facebook", "onCancel");
                     }
 
                     @Override
                     public void onError(FacebookException error) {
-
+                        Log.e("Facebook", "onError " + error.getLocalizedMessage());
                     }
                 });
-                LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this, Arrays.asList("public_profile", "email"));
-
             }
         });
-
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -160,20 +166,11 @@ public class LoginActivity extends AppCompatActivity {
                         startActivity(intent);
                     }
                 });
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        callbackManager.onActivityResult(requestCode, resultCode, data);
-//    }
 
     }
-
-
-
-
-//    private int getUserID(String email) {
-//        for(int i=0; i<memberCount; i++)
-//            if(email.compareTo(member[i][0]) == 0) return i;
-//        return -1;
-//    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
 }
