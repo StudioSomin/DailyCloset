@@ -31,7 +31,7 @@ public class DateActivity extends AppCompatActivity {
 
                 Toast.makeText(DateActivity.this, year + " " + monthOfYear + " " + dayOfMonth, Toast.LENGTH_SHORT).show();
 
-                String loc = editText.;
+                //String loc = editText.;
             }
         });
     }
