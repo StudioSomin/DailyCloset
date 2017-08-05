@@ -15,7 +15,8 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:id="@+id/img_logo"
-        android:src="@drawable/logo_sample" />
+        android:src="@drawable/logo_sample"
+        android:scaleType="fitCenter"/>
 
     <TextView
         android:layout_width="wrap_content"
