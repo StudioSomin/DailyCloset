@@ -10,8 +10,9 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:lines="15"
             android:textSize="30dp"
-            android:text="Fragment Closet"
+            android:text="F\nr\na\ng\nm\ne\nn\nt\n \nC\nl\no\ns\ne\nt\n"
             android:gravity="center" />
     </LinearLayout>
 </ScrollView>

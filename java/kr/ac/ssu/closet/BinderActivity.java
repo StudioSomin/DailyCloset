@@ -4,7 +4,9 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatDrawableManager;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -20,6 +22,7 @@ public class BinderActivity extends AppCompatActivity {
 
     private RadioGroup rgTab;
     private RadioButton[] tab = new RadioButton[3];
+//    private FloatingActionButton floatingActionButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +34,10 @@ public class BinderActivity extends AppCompatActivity {
         tab[0] = (RadioButton) findViewById(R.id.tab_today);
         tab[1] = (RadioButton) findViewById(R.id.tab_calendar);
         tab[2] = (RadioButton) findViewById(R.id.tab_closet);
+//        floatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
+//
+//        floatingActionButton.setImageDrawable(AppCompatDrawableManager.get()
+//                .getDrawable(getApplicationContext(), R.drawable.ic_menu_white));
 //
 //        FragmentManager fragmentManager = getFragmentManager();
 //        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
