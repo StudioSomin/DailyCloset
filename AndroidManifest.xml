@@ -10,29 +10,17 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity">
-            <intent-filter>
-                <action android:name="closet.ssu.ac.kr.intentfilter.loginview" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".JoinActivity">
-            <intent-filter>
-                <action android:name="closet.ssu.ac.kr.intentfilter.joinview" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".BinderActivity" />
-        <activity android:name=".DateActivity"></activity>
+        <activity android:name=".LoginActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".JoinActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".BinderActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".DateActivity" android:screenOrientation="portrait"/>
 
         <!--Facebook Login-->
         <activity
