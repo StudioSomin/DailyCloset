@@ -2,6 +2,7 @@ package kr.ac.ssu.closet;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -26,6 +27,12 @@ import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 
 
 /**
@@ -33,6 +40,7 @@ import com.facebook.login.widget.LoginButton;
  */
 
 public class LoginActivity extends AppCompatActivity {
+    final static int O_SIGN_IN=0, F_SIGN_IN=1, G_SIGN_IN=2, T_SIGN_IN=3, ERR=-1;
 
     static HashMap<String, Info> member = new HashMap<String, Info>();
     private Info info;
@@ -58,11 +66,13 @@ public class LoginActivity extends AppCompatActivity {
     private CheckBox chkSigned;
     private TextView btnSignup;
 
-    private CallbackManager callbackManager;
-
     private Button btnFacebook;
     private Button btnGoogle;
     private Button btnTwitter;
+
+    private CallbackManager callbackManager;
+    GoogleApiClient mGoogleApiClient;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,39 +99,6 @@ public class LoginActivity extends AppCompatActivity {
         btnFacebook = (Button)findViewById(R.id.btn_facebook);
         btnGoogle = (Button)findViewById(R.id.btn_google);
         btnTwitter = (Button)findViewById(R.id.btn_twitter);
-
-        /* Facebook Login */
-        callbackManager = CallbackManager.Factory.create();
-        btnFacebook.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LoginManager.getInstance().logInWithReadPermissions(
-                        LoginActivity.this,
-                        Arrays.asList("public_profile", "user_friends", "email")
-                );
-                LoginManager.getInstance().registerCallback(
-                        callbackManager, new FacebookCallback<LoginResult>() {
-                    @Override
-                    public void onSuccess(LoginResult loginResult) {
-                        /* TODO: id 멤버 DB에 저장 */
-                        /* TODO: 페이스북 공개 프로필에서 필요한 정보 못 찾으면 따로 요청 */
-                        Log.e("Facebook", "onSuccess");
-                        Log.d("Facebook", "user id : " + AccessToken.getCurrentAccessToken().getUserId());
-                        startActivity(new Intent(LoginActivity.this, BinderActivity.class));
-                    }
-
-                    @Override
-                    public void onCancel() {
-                        Log.e("Facebook", "onCancel");
-                    }
-
-                    @Override
-                    public void onError(FacebookException error) {
-                        Log.e("Facebook", "onError " + error.getLocalizedMessage());
-                    }
-                });
-            }
-        });
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -167,10 +144,94 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
 
+
+        /* Facebook Login */
+        callbackManager = CallbackManager.Factory.create();
+        btnFacebook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LoginManager.getInstance().logInWithReadPermissions(
+                        LoginActivity.this,
+                        Arrays.asList("public_profile", "user_friends", "email")
+                );
+                LoginManager.getInstance().registerCallback(
+                        callbackManager, new FacebookCallback<LoginResult>() {
+                            @Override
+                            public void onSuccess(LoginResult loginResult) {
+                        /* TODO: id 멤버 DB에 저장 */
+                        /* TODO: 페이스북 공개 프로필에서 필요한 정보 못 찾으면 따로 요청 */
+                                Log.e("Facebook", "onSuccess");
+                                Log.d("Facebook", "user id : " + AccessToken.getCurrentAccessToken().getUserId());
+                                startActivityForResult(new Intent(LoginActivity.this, BinderActivity.class), F_SIGN_IN);
+                            }
+
+                            @Override
+                            public void onCancel() {
+                                Log.e("Facebook", "onCancel");
+                            }
+
+                            @Override
+                            public void onError(FacebookException error) {
+                                Log.e("Facebook", "onError " + error.getLocalizedMessage());
+                            }
+                        });
+            }
+        });
+
+        /* Google Login */
+        // Configure sign-in to request the user's ID, email address, and basic
+        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail().build();
+        // Build a GoogleApiClient with access to the Google Sign-In API and the
+        // options specified by gso.
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this /* FragmentActivity */, new GoogleApiClient.OnConnectionFailedListener() {
+                    @Override
+                    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+                    }
+                } /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso).build();
+        btnGoogle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+                startActivityForResult(signInIntent, G_SIGN_IN);
+            }
+        });
+
     }
+
+    private void handleSignInResult(GoogleSignInResult result) {
+        Log.e("Google", "handleSignInResult:" + result.isSuccess());
+        if (result.isSuccess()) {
+            // Signed in successfully, show authenticated UI.
+            GoogleSignInAccount acct = result.getSignInAccount();
+            Log.d("Google", acct.getId());
+//            Log.d("Google", acct.getIdToken());
+            Log.d("Google", acct.getEmail());
+            startActivity(new Intent(LoginActivity.this, BinderActivity.class));
+//            mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
+//            updateUI(true);
+        } else {
+            // Signed out, show unauthenticated UI.
+//            updateUI(false);
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode, resultCode, data);
+        switch(requestCode) {
+            case O_SIGN_IN: break;
+            case F_SIGN_IN:
+                callbackManager.onActivityResult(requestCode, resultCode, data);
+                break;
+            case G_SIGN_IN:
+                GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+                handleSignInResult(result);
+        }
+
     }
 }
