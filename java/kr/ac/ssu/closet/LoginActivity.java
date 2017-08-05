@@ -52,7 +52,7 @@ import io.fabric.sdk.android.Fabric;
  */
 
 public class LoginActivity extends AppCompatActivity {
-    private static final int O_SIGN_IN=0, F_SIGN_IN=1, G_SIGN_IN=2, T_SIGN_IN=3, ERR=-1;
+    private final static int O_SIGN_IN=0, F_SIGN_IN=1, G_SIGN_IN=2, T_SIGN_IN=3, ERR=-1;
     private static final String TWT_KEY="NqBNWXQFezaeC0aKoBBXhVF8t",
             TWT_SEC="h9ASZ4nDOrXidRQzvXvaA7AyRMMXUNrMBeNoS5rykijjy6d8QZ";
 
@@ -93,8 +93,8 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext()); // 페이스북 SDK 초기화
-
         setContentView(R.layout.activity_login);
+        getSupportActionBar().hide();
 
         email = "soeun@somin.com";
         info = new Info("Soeun", "Lee", Info.hash("12345678"+email), 1995, 4, 11, 1);
@@ -138,9 +138,10 @@ public class LoginActivity extends AppCompatActivity {
 //
 //                    inputHash = inputSb.toString();
 
-                if(inputHash.compareTo(originHash) == 0)
+                if(inputHash.compareTo(originHash) == 0) {
                     startActivity(new Intent(LoginActivity.this, BinderActivity.class));
-                else
+                    finish();
+                } else
                     Toast.makeText(LoginActivity.this, "origin: " + originHash + "\n"
                             + "input: " + inputHash, Toast.LENGTH_SHORT).show();
 
@@ -156,6 +157,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onClick(View v) {
                         Intent intent = new Intent(LoginActivity.this, JoinActivity.class);
                         startActivity(intent);
+                        finish();
                     }
                 });
 
@@ -177,7 +179,8 @@ public class LoginActivity extends AppCompatActivity {
                         /* TODO: 페이스북 공개 프로필에서 필요한 정보 못 찾으면 따로 요청 */
                                 Log.e("Facebook", "onSuccess");
                                 Log.d("Facebook", "user id : " + AccessToken.getCurrentAccessToken().getUserId());
-                                startActivityForResult(new Intent(LoginActivity.this, BinderActivity.class), F_SIGN_IN);
+                                startActivity(new Intent(LoginActivity.this, BinderActivity.class));
+                                finish();
                             }
 
                             @Override
@@ -241,7 +244,8 @@ public class LoginActivity extends AppCompatActivity {
                                 Log.e("Twitter", "onSuccess");
                                 Log.d("Twitter", "user id: " + userId.toString());
                                 Log.d("Twitter", "user name: " + userName);
-                                startActivityForResult(new Intent(LoginActivity.this, BinderActivity.class), T_SIGN_IN);
+                                startActivity(new Intent(LoginActivity.this, BinderActivity.class));
+                                finish();
                             }
 
                             @Override
@@ -262,6 +266,7 @@ public class LoginActivity extends AppCompatActivity {
 //            Log.d("Google", acct.getIdToken());
             Log.d("Google", acct.getEmail());
             startActivity(new Intent(LoginActivity.this, BinderActivity.class));
+            finish();
 //            mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
 //            updateUI(true);
         } else {
@@ -275,9 +280,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         switch(requestCode) {
             case O_SIGN_IN: break;
-            case F_SIGN_IN:
-                callbackManager.onActivityResult(requestCode, resultCode, data);
-                break;
             case G_SIGN_IN:
                 GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
                 handleSignInResult(result);
@@ -285,6 +287,8 @@ public class LoginActivity extends AppCompatActivity {
             case TwitterAuthConfig.DEFAULT_AUTH_REQUEST_CODE:
                 mTwitterClient.onActivityResult(requestCode, resultCode, data);
             default:
+                if(requestCode == FacebookSdk.getCallbackRequestCodeOffset())
+                    callbackManager.onActivityResult(requestCode, resultCode, data);
         }
 
     }
