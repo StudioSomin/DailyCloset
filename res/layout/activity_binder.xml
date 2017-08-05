@@ -1,37 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark">
 
     <!--TODO: Overlap button with frame => hide border between button(selected) and frame-->
     <RadioGroup
         android:orientation="horizontal"
+        android:weightSum="7"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/group_tab">
         <!--TODO: Overlap buttons with another button-->
         <RadioButton
-            android:layout_weight="1"
+            android:layout_weight="3"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:background="@drawable/selector_tab"
-
+            android:button="@null"
             android:gravity="center"
             android:id="@+id/tab_today"
             android:text="today's look" />
         <RadioButton
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:background="@drawable/selector_tab"
+            android:button="@null"
             android:gravity="center"
             android:id="@+id/tab_calendar"
             android:text="calendar" />
         <RadioButton
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:background="@drawable/selector_tab"
+            android:button="@null"
             android:gravity="center"
             android:id="@+id/tab_closet"
             android:text="my closet" />
@@ -39,6 +43,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/frame" />
+        android:id="@+id/frame"
+        android:background="@color/colorBackground"/>
     
 </LinearLayout>
