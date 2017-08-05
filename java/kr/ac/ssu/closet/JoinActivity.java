@@ -102,15 +102,16 @@ public class JoinActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                /* TODO: Check validity of email address */
-                if(s.toString().length()<1)
-                    etEmail.setError("What's your email address?");
+                final String regex = "^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])$";
+                // ref: http://emailregex.com/
+                if(s.toString().length()<1 || !s.toString().matches(regex))
+                    etEmail.setError("Please enter a valid address.");
 
 //                for(int i = 0; i < LoginActivity.memberCount; i++) {
-                    if(LoginActivity.member.get(s.toString()) == null)
+                if(LoginActivity.member.get(s.toString()) != null)
 //                    if(s.toString().compareTo(LoginActivity.member[i][0]) == 0)
-                        etEmail.setError("Duplicated email");
-//                }
+                    etEmail.setError("Email address already in use.");
+//              }
                 checkAllContentsFilled();
             }
         });
@@ -125,23 +126,24 @@ public class JoinActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                int len = s.toString().length();
-                if(len < 7) {
-                    /* TODO: Check combination condition of password */
-                    /* TODO: password = s.toString().hashing */
-                    etPassword.setError("Enter a combination of at least seven numbers, letters, and punctuation marks.");
+                final String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{7,20}$";
+                // ref: https://stackoverflow.com/questions/3802192/regexp-java-for-password-validation
+//                int len = s.toString().length();
+//                if(len < 7) {
+                if(!s.toString().matches(regex)) {
+                    etPassword.setError("Enter a combination of at least seven numbers," +
+                            "upper and lower case letters, and special characters.");
                     isPassConfEnabled = false;
-                    etPasswordConfirm.setEnabled(isPassConfEnabled);
                     etPasswordConfirm.setText(null);
                     etPasswordConfirm.setError(null);
-                }
-                else {
+
+                } else {
                     isPassConfEnabled = true;
-                    etPasswordConfirm.setEnabled(isPassConfEnabled);
-                    password = s.toString();
+//                    password = s.toString();
                     passwordConfirm = etPasswordConfirm.getText().toString();
                     checkPassword(password, passwordConfirm);
                 }
+                etPasswordConfirm.setEnabled(isPassConfEnabled);
                 checkAllContentsFilled();
             }
         });
@@ -159,7 +161,6 @@ public class JoinActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                /* TODO: Compare hashed PW and PW(Confirm) */
                 password = etPassword.getText().toString();
                 passwordConfirm = s.toString();
                 checkPassword(password, passwordConfirm);
@@ -178,6 +179,7 @@ public class JoinActivity extends AppCompatActivity {
                         birthD = dayOfMonth;
                         btnBirth.setText(year+"-"+(month+1)+"-"+dayOfMonth);
                         isBirthSet = true;
+                        checkAllContentsFilled();
                     }
                 }, birthY, birthM, birthD).show();
                 checkAllContentsFilled();
@@ -228,9 +230,11 @@ public class JoinActivity extends AppCompatActivity {
     private void checkAllContentsFilled() {
         if(etNameFirst.getError() != null || etNameLast.getError() != null || etEmail.getError() != null
                 || etPassword.getError() != null || etPasswordConfirm.getError() != null
+
                 || etNameFirst.getText() == null || etNameLast.getText() == null || etEmail.getText() == null
                 || etPassword.getText() == null || etPasswordConfirm.getText() == null
                 || rgGender.getCheckedRadioButtonId() == -1 || !isBirthSet) {
+
             btnJoin.setEnabled(false);
         } else btnJoin.setEnabled(true);
     }
