@@ -34,17 +34,32 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterAuthException;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.identity.TwitterAuthClient;
+import com.twitter.sdk.android.core.identity.TwitterLoginButton;
+import com.twitter.sdk.android.core.models.User;
+
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by soeun on 2017. 7. 17..
  */
 
 public class LoginActivity extends AppCompatActivity {
-    final static int O_SIGN_IN=0, F_SIGN_IN=1, G_SIGN_IN=2, T_SIGN_IN=3, ERR=-1;
+    private static final int O_SIGN_IN=0, F_SIGN_IN=1, G_SIGN_IN=2, T_SIGN_IN=3, ERR=-1;
+    private static final String TWT_KEY="NqBNWXQFezaeC0aKoBBXhVF8t",
+            TWT_SEC="h9ASZ4nDOrXidRQzvXvaA7AyRMMXUNrMBeNoS5rykijjy6d8QZ";
 
     static HashMap<String, Info> member = new HashMap<String, Info>();
     private Info info;
     private String email;
+//    TwitterAuthClient mTwitterAuthClient;
 //    static int memberCount;
 
 //    public static String[][] member = {
@@ -70,9 +85,9 @@ public class LoginActivity extends AppCompatActivity {
     private Button btnGoogle;
     private Button btnTwitter;
 
-    private CallbackManager callbackManager;
-    GoogleApiClient mGoogleApiClient;
-
+    private CallbackManager callbackManager; // for facebook
+    private GoogleApiClient mGoogleApiClient; // for google
+    private TwitterAuthClient mTwitterClient; // for twitter
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,6 +194,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         /* Google Login */
+        // ref: https://developers.google.com/identity/sign-in/android/start
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -201,6 +217,40 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        /* Twitter Login */
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWT_KEY, TWT_SEC);
+        Fabric.with(this, new Twitter(authConfig));
+//        if (Fabric.isInitialized()) {
+//            Log.e("Fabric", "initialized");
+//        } else Log.e("Fabric", "uninitialized");
+        mTwitterClient = new TwitterAuthClient();
+
+        // final TwitterAuthClient mTwitterAuthClient= new TwitterAuthClient();
+        btnTwitter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mTwitterClient.authorize(LoginActivity.this,
+                        new com.twitter.sdk.android.core.Callback<TwitterSession>() {
+                            @Override
+                            public void success(Result<TwitterSession> twitterSessionResult) {
+                                // Success
+                                TwitterSession session = twitterSessionResult.data;
+                                Long userId = session.getUserId();
+                                final String userName = session.getUserName();
+
+                                Log.e("Twitter", "onSuccess");
+                                Log.d("Twitter", "user id: " + userId.toString());
+                                Log.d("Twitter", "user name: " + userName);
+                                startActivityForResult(new Intent(LoginActivity.this, BinderActivity.class), T_SIGN_IN);
+                            }
+
+                            @Override
+                            public void failure(TwitterException e) {
+                                e.printStackTrace();
+                            }
+                        });
+            }
+        });
     }
 
     private void handleSignInResult(GoogleSignInResult result) {
@@ -231,6 +281,10 @@ public class LoginActivity extends AppCompatActivity {
             case G_SIGN_IN:
                 GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
                 handleSignInResult(result);
+                break;
+            case TwitterAuthConfig.DEFAULT_AUTH_REQUEST_CODE:
+                mTwitterClient.onActivityResult(requestCode, resultCode, data);
+            default:
         }
 
     }
