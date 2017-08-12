@@ -1,5 +1,7 @@
 package kr.ac.ssu.closet;
 
+import android.util.Log;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -45,6 +47,7 @@ class Info {
             e.printStackTrace();
         }
 
+        Log.i("HASH", input);
         return input;
     }
 
