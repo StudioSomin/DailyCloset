@@ -30,7 +30,8 @@ public class JoinActivity extends AppCompatActivity {
 
     private String nameFirst, nameLast, email;
     private String password = null, passwordConfirm = null;
-    private int birthY=1990, birthM=0, birthD=1;
+    private String birthday;
+    private int birthY=1990, birthM=1, birthD=1;
     private boolean isBirthSet;
     private boolean isPassConfEnabled = false;
     private int gender; // Female:1, Male:2
@@ -126,7 +127,7 @@ public class JoinActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                final String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{7,20}$";
+                final String regex = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{7,20}$";
                 // ref: https://stackoverflow.com/questions/3802192/regexp-java-for-password-validation
 //                int len = s.toString().length();
 //                if(len < 7) {
@@ -139,7 +140,7 @@ public class JoinActivity extends AppCompatActivity {
 
                 } else {
                     isPassConfEnabled = true;
-//                    password = s.toString();
+                    password = s.toString();
                     passwordConfirm = etPasswordConfirm.getText().toString();
                     checkPassword(password, passwordConfirm);
                 }
@@ -175,13 +176,13 @@ public class JoinActivity extends AppCompatActivity {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                         birthY = year;
-                        birthM = month;
+                        birthM = month+1;
                         birthD = dayOfMonth;
                         btnBirth.setText(year+"-"+(month+1)+"-"+dayOfMonth);
                         isBirthSet = true;
                         checkAllContentsFilled();
                     }
-                }, birthY, birthM, birthD).show();
+                }, birthY, birthM-1, birthD).show();
                 checkAllContentsFilled();
             }
         });
@@ -218,9 +219,11 @@ public class JoinActivity extends AppCompatActivity {
                 nameFirst = etNameFirst.getText().toString();
                 nameLast = etNameLast.getText().toString();
                 email = etEmail.getText().toString();
+                birthday = String.format("%04d-%02d-%02d", birthY, birthM, birthD);
                 gender = rgGender.getCheckedRadioButtonId();
 
                 /* TODO: Save data to server DB */
+                new RegistDB(nameFirst, nameLast, email, Info.hash(password), birthday, gender).execute();
 //                Toast.makeText(JoinActivity.this, nameFirst +"/"+ nameLast +"/"+
 //                        email +"/"+ password+"/"+ gender, Toast.LENGTH_SHORT).show();
             }
