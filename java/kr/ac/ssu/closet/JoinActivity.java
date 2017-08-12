@@ -109,9 +109,9 @@ public class JoinActivity extends AppCompatActivity {
                     etEmail.setError("Please enter a valid address.");
 
 //                for(int i = 0; i < LoginActivity.memberCount; i++) {
-                if(LoginActivity.member.get(s.toString()) != null)
+                /* TODO: check if email address existed. if(LoginActivity.member.get(s.toString()) != null) */
 //                    if(s.toString().compareTo(LoginActivity.member[i][0]) == 0)
-                    etEmail.setError("Email address already in use.");
+//                    etEmail.setError("Email address already in use.");
 //              }
                 checkAllContentsFilled();
             }
@@ -222,8 +222,7 @@ public class JoinActivity extends AppCompatActivity {
                 birthday = String.format("%04d-%02d-%02d", birthY, birthM, birthD);
                 gender = rgGender.getCheckedRadioButtonId();
 
-                /* TODO: Save data to server DB */
-                new RegistDB(nameFirst, nameLast, email, Info.hash(password), birthday, gender).execute();
+                new RegistDB(nameFirst, nameLast, email, Info.hash(password+email), birthday, gender).execute();
 //                Toast.makeText(JoinActivity.this, nameFirst +"/"+ nameLast +"/"+
 //                        email +"/"+ password+"/"+ gender, Toast.LENGTH_SHORT).show();
             }

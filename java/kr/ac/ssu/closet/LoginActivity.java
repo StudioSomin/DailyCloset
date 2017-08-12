@@ -1,8 +1,11 @@
 package kr.ac.ssu.closet;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +15,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -56,9 +67,10 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TWT_KEY="NqBNWXQFezaeC0aKoBBXhVF8t",
             TWT_SEC="h9ASZ4nDOrXidRQzvXvaA7AyRMMXUNrMBeNoS5rykijjy6d8QZ";
 
-    static HashMap<String, Info> member = new HashMap<String, Info>();
-    private Info info;
-    private String email;
+//    static HashMap<String, Info> member = new HashMap<String, Info>();
+//    private Info info;
+//    private String email;
+    private String result;
 //    TwitterAuthClient mTwitterAuthClient;
 //    static int memberCount;
 
@@ -96,13 +108,13 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         getSupportActionBar().hide();
 
-        email = "soeun@somin.com";
-        info = new Info("Soeun", "Lee", Info.hash("12345678"+email), 1995, 4, 11, 1);
-        member.put(email, info);
-
-        email = "jongmin@somin.com";
-        info = new Info("Jongmin", "Chae", Info.hash("12345678"+email), 1992, 9, 24, 2);
-        member.put(email, info);
+//        email = "soeun@somin.com";
+//        info = new Info("Soeun", "Lee", Info.hash("12345678"+email), 1995, 4, 11, 1);
+//        member.put(email, info);
+//
+//        email = "jongmin@somin.com";
+//        info = new Info("Jongmin", "Chae", Info.hash("12345678"+email), 1992, 9, 24, 2);
+//        member.put(email, info);
 
 //        memberCount = member.size();
 
@@ -118,13 +130,15 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /* TODO: Save hashed password */
                 String email = etEmail.getText().toString();
                 String password = etPassword.getText().toString();
-                if(member.get(email) == null) return;
+//                if(member.get(email) == null) return;
 
-                String inputHash = Info.hash(password + email);
-                String originHash = member.get(email).getPasswordHashed();
+                LoginDB loginDB = new LoginDB(email, Info.hash(password + email));
+                loginDB.execute();
+
+//                String inputHash = Info.hash(password + email);
+//                String originHash = member.get(email).getPasswordHashed();
 
 //                try {
 //                    MessageDigest inputMd = MessageDigest.getInstance("SHA-256");
@@ -138,12 +152,12 @@ public class LoginActivity extends AppCompatActivity {
 //
 //                    inputHash = inputSb.toString();
 
-                if(inputHash.compareTo(originHash) == 0) {
-                    startActivity(new Intent(LoginActivity.this, BinderActivity.class));
-                    finish();
-                } else
-                    Toast.makeText(LoginActivity.this, "origin: " + originHash + "\n"
-                            + "input: " + inputHash, Toast.LENGTH_SHORT).show();
+//                if(inputHash.compareTo(originHash) == 0) {
+//                    startActivity(new Intent(LoginActivity.this, BinderActivity.class));
+//                    finish();
+//                } else
+//                    Toast.makeText(LoginActivity.this, "origin: " + originHash + "\n"
+//                            + "input: " + inputHash, Toast.LENGTH_SHORT).show();
 
 //                }catch (NoSuchAlgorithmException e) {
 //                    e.printStackTrace();
@@ -290,6 +304,100 @@ public class LoginActivity extends AppCompatActivity {
                 if(requestCode == FacebookSdk.getCallbackRequestCodeOffset())
                     callbackManager.onActivityResult(requestCode, resultCode, data);
         }
+
+    }
+
+    class LoginDB extends AsyncTask<Void, Integer, Void> {
+        String id, password;
+        String data;
+
+        LoginDB(String id, String password) {
+            this.id = id;
+            this.password = password;
+        }
+
+        String getData() {
+            return data;
+        }
+
+        @Override
+        protected Void doInBackground(Void... unused) {
+
+        /* 인풋 파라메터값 생성 */
+            String param = "&u_id=" + id + "&u_password=" + password + "";
+            Log.e("POST",param);
+            try {
+            /* 서버연결 */
+                URL url = new URL("http://52.78.168.31/member.php");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+                conn.connect();
+
+            /* 안드로이드 -> 서버 파라메터값 전달 */
+                OutputStream outs = conn.getOutputStream();
+                outs.write(param.getBytes("UTF-8"));
+                outs.flush();
+                outs.close();
+
+            /* 서버 -> 안드로이드 파라메터값 전달 */
+                InputStream is = null;
+                BufferedReader in = null;
+
+                is = conn.getInputStream();
+                in = new BufferedReader(new InputStreamReader(is), 8 * 1024);
+                String line = null;
+                StringBuffer buff = new StringBuffer();
+                while ( ( line = in.readLine() ) != null )
+                {
+                    buff.append(line + "\n");
+                }
+                data = buff.toString().trim();
+
+            /* 서버에서 응답 */
+                Log.e("RECV DATA",data);
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            AlertDialog.Builder alertDialogBuilder =
+                    new AlertDialog.Builder(LoginActivity.this);
+
+            if(data.equals("\uFEFF1")) {
+                Log.e("RESULT","성공적으로 처리되었습니다!");
+                startActivity(new Intent(LoginActivity.this, BinderActivity.class));
+
+            } else { // if(data.equals("\uFEFF0")) {
+                Log.e("RESULT","존재하지 않는 이메일이거나 비밀번호가 일치하지 않습니다.");
+
+                alertDialogBuilder
+                        .setTitle("알림")
+                        .setMessage("존재하지 않는 이메일이거나 비밀번호가 일치하지 않습니다.")
+                        .setCancelable(true)
+                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //finish();
+                            }
+                        });
+                AlertDialog dialog = alertDialogBuilder.create();
+                dialog.show();
+
+//            } else {
+//                Log.e("RESULT","에러 발생! ERRCODE = " + data);
+            }
+        }
+
 
     }
 }
