@@ -1,7 +1,11 @@
 package kr.ac.ssu.closet;
 
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -14,6 +18,14 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -222,7 +234,9 @@ public class JoinActivity extends AppCompatActivity {
                 birthday = String.format("%04d-%02d-%02d", birthY, birthM, birthD);
                 gender = rgGender.getCheckedRadioButtonId();
 
-                new RegistDB(nameFirst, nameLast, email, Info.hash(password+email), birthday, gender).execute();
+                CheckDB checkDB = new CheckDB(email, Info.hash(password + email));
+                checkDB.execute();
+
 //                Toast.makeText(JoinActivity.this, nameFirst +"/"+ nameLast +"/"+
 //                        email +"/"+ password+"/"+ gender, Toast.LENGTH_SHORT).show();
             }
@@ -246,6 +260,103 @@ public class JoinActivity extends AppCompatActivity {
             etPasswordConfirm.setError("Password does not match the confirm password.");
         else
             etPasswordConfirm.setError(null);
+    }
+
+    class CheckDB extends AsyncTask<Void, Integer, Void> {
+        String id, password;
+        String data;
+
+        CheckDB(String id, String password) {
+            this.id = id;
+            this.password = password;
+        }
+
+        String getData() {
+            return data;
+        }
+
+        @Override
+        protected Void doInBackground(Void... unused) {
+
+        /* 인풋 파라메터값 생성 */
+            String param = "&u_id=" + id + "&u_password=" + password + "";
+            Log.e("POST",param);
+            try {
+            /* 서버연결 */
+                URL url = new URL("http://52.78.168.31/member.php");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+                conn.connect();
+
+            /* 안드로이드 -> 서버 파라메터값 전달 */
+                OutputStream outs = conn.getOutputStream();
+                outs.write(param.getBytes("UTF-8"));
+                outs.flush();
+                outs.close();
+
+            /* 서버 -> 안드로이드 파라메터값 전달 */
+                InputStream is = null;
+                BufferedReader in = null;
+
+                is = conn.getInputStream();
+                in = new BufferedReader(new InputStreamReader(is), 8 * 1024);
+                String line = null;
+                StringBuffer buff = new StringBuffer();
+                while ( ( line = in.readLine() ) != null )
+                {
+                    buff.append(line + "\n");
+                }
+                data = buff.toString().trim();
+
+            /* 서버에서 응답 */
+                Log.e("RECV DATA",data);
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        /* TODO: Catch exception - network */
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            AlertDialog.Builder alertDialogBuilder =
+                    new AlertDialog.Builder(JoinActivity.this);
+            Log.e("DATA", data);
+
+            if(data.equals("\uFEFF-1")) {
+                Log.e("RESULT","성공적으로 처리되었습니다!");
+                new RegistDB(nameFirst, nameLast, email, Info.hash(password+email), birthday, gender).execute();
+                finish();
+
+            } else { // if(data.equals("\uFEFF0")) {
+                Log.e("RESULT","존재하는 아이디입니다.");
+
+                alertDialogBuilder
+                        .setTitle("알림")
+                        .setMessage("존재하는 아이디입니다.")
+                        .setCancelable(true)
+                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //finish();
+                            }
+                        });
+                AlertDialog dialog = alertDialogBuilder.create();
+                dialog.show();
+
+//            } else {
+//                Log.e("RESULT","에러 발생! ERRCODE = " + data);
+            }
+        }
+
+
     }
 }
 
