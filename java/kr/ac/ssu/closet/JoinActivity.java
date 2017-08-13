@@ -332,7 +332,7 @@ public class JoinActivity extends AppCompatActivity {
 
             if(data.equals("\uFEFF-1")) {
                 Log.e("RESULT","성공적으로 처리되었습니다!");
-                new RegistDB(nameFirst, nameLast, email, Info.hash(password+email), birthday, gender).execute();
+                new RegistDB(nameFirst, nameLast, email, password, birthday, gender).execute();
                 finish();
 
             } else { // if(data.equals("\uFEFF0")) {
