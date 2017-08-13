@@ -2,6 +2,7 @@ package kr.ac.ssu.closet;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -108,6 +109,14 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         getSupportActionBar().hide();
 
+        SharedPreferences prefs = getSharedPreferences("prefName", MODE_PRIVATE);
+        String userId = prefs.getString("id", "");
+        String userPw = prefs.getString("pw", "");
+
+        if(!(userId.compareTo("") == 0 && userPw.compareTo("") == 0)) {
+            LoginDB loginDB = new LoginDB(userId, userPw);
+            loginDB.execute();
+        }
 //        email = "soeun@somin.com";
 //        info = new Info("Soeun", "Lee", Info.hash("12345678"+email), 1995, 4, 11, 1);
 //        member.put(email, info);
@@ -375,7 +384,19 @@ public class LoginActivity extends AppCompatActivity {
 
             if(data.equals("\uFEFF1")) {
                 Log.e("RESULT","성공적으로 처리되었습니다!");
-                startActivity(new Intent(LoginActivity.this, BinderActivity.class));
+                SharedPreferences prefs = getSharedPreferences("prefName", MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+
+                editor.putString("id", id);
+                editor.putString("pw", password);
+                editor.commit();
+
+                Intent intent = new Intent(LoginActivity.this, BinderActivity.class);
+                intent.putExtra("user", id);
+                startActivity(intent);
+                finish();
+
+                //startActivity(new Intent(LoginActivity.this, BinderActivity.class));
 
             } else { // if(data.equals("\uFEFF0")) {
                 Log.e("RESULT","존재하지 않는 이메일이거나 비밀번호가 일치하지 않습니다.");

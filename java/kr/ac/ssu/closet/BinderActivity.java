@@ -3,15 +3,19 @@ package kr.ac.ssu.closet;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatDrawableManager;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 /**
  * Created by soeun on 2017. 7. 21..
@@ -22,6 +26,7 @@ public class BinderActivity extends AppCompatActivity {
 
     private RadioGroup rgTab;
     private RadioButton[] tab = new RadioButton[3];
+    private FloatingActionButton fab;
 //    private FloatingActionButton floatingActionButton;
 
     @Override
@@ -30,10 +35,14 @@ public class BinderActivity extends AppCompatActivity {
         setContentView(R.layout.activity_binder);
         getSupportActionBar().hide();
 
+        Intent intent = getIntent();
+        String user = intent.getStringExtra("user");
+        Toast.makeText(BinderActivity.this, user, Toast.LENGTH_SHORT).show();
         rgTab = (RadioGroup) findViewById(R.id.group_tab);
         tab[0] = (RadioButton) findViewById(R.id.tab_today);
         tab[1] = (RadioButton) findViewById(R.id.tab_calendar);
         tab[2] = (RadioButton) findViewById(R.id.tab_closet);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
 //        floatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
 //
 //        floatingActionButton.setImageDrawable(AppCompatDrawableManager.get()
@@ -43,6 +52,19 @@ public class BinderActivity extends AppCompatActivity {
 //        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 //        fragmentTransaction.add(R.id.frame, new TodayFragment());
 //        fragmentTransaction.commit();
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences prefs = getSharedPreferences("prefName", MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.clear();
+                editor.commit();
+                
+                startActivity(new Intent(BinderActivity.this, LoginActivity.class));
+                finish();
+            }
+        });
 
         rgTab.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             Fragment fragment;
