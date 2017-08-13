@@ -331,9 +331,22 @@ public class JoinActivity extends AppCompatActivity {
             Log.e("DATA", data);
 
             if(data.equals("\uFEFF-1")) {
-                Log.e("RESULT","성공적으로 처리되었습니다!");
+                Log.e("RESULT", "성공적으로 처리되었습니다!");
+
+                alertDialogBuilder
+                        .setTitle("알림")
+                        .setMessage("회원 인증 메일이 발송되었습니다.")
+                        .setCancelable(true)
+                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                finish();
+                            }
+                        });
+                AlertDialog dialog = alertDialogBuilder.create();
+                dialog.show();
+
                 new RegistDB(nameFirst, nameLast, email, password, birthday, gender).execute();
-                finish();
 
             } else { // if(data.equals("\uFEFF0")) {
                 Log.e("RESULT","존재하는 아이디입니다.");

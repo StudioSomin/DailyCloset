@@ -377,7 +377,21 @@ public class LoginActivity extends AppCompatActivity {
                 Log.e("RESULT","성공적으로 처리되었습니다!");
                 startActivity(new Intent(LoginActivity.this, BinderActivity.class));
 
-            } else { // if(data.equals("\uFEFF0")) {
+            } else if(data.equals("\uFEFF2")) { // if(data.equals("\uFEFF0")) {
+                alertDialogBuilder
+                        .setTitle("알림")
+                        .setMessage("이메일 회원 인증이 완료되지 않았습니다.")
+                        .setCancelable(true)
+                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //finish();
+                            }
+                        });
+                AlertDialog dialog = alertDialogBuilder.create();
+                dialog.show();
+
+            } else {
                 Log.e("RESULT","존재하지 않는 이메일이거나 비밀번호가 일치하지 않습니다.");
 
                 alertDialogBuilder

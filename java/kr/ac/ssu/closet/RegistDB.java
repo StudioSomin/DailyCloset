@@ -1,5 +1,6 @@
 package kr.ac.ssu.closet;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -12,6 +13,9 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by soeun on 2017. 8. 13..
@@ -19,7 +23,7 @@ import java.net.URL;
  */
 
 class RegistDB extends AsyncTask<Void, Integer, Void> {
-    String first_name, last_name, id, password, birthday;
+    String first_name, last_name, id, password, birthday, v_key;
     int sex;
 
     RegistDB(String first_name, String last_name, String id,
@@ -30,14 +34,20 @@ class RegistDB extends AsyncTask<Void, Integer, Void> {
         this.password = password;
         this.birthday = birthday;
         this.sex = sex;
+        this.v_key = String.format("%s%04d",
+                new SimpleDateFormat("yyyyMMddHHmmss").
+                        format(new Date(System.currentTimeMillis())),
+                (int)(Math.random()*10000));
     }
 
     @Override
     protected Void doInBackground(Void... unused) {
 
         /* 인풋 파라메터값 생성 */
-        String param = "&u_id=" + id + "&u_first_name=" + first_name + "&u_last_name=" + last_name
-        + "&u_password=" + password + "&u_birthday=" + birthday + "&u_sex=" + sex + "";
+        String param =
+                "&u_id=" + id + "&u_first_name=" + first_name + "&u_last_name=" + last_name
+                        + "&u_password=" + password + "&u_birthday=" + birthday +"&u_sex=" + sex
+                        + "&u_key=" + v_key + "";
 
         try {
             /* 서버연결 */
