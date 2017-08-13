@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
@@ -38,6 +39,7 @@ public class JoinActivity extends AppCompatActivity {
     private EditText etNameFirst, etNameLast, etEmail, etPassword, etPasswordConfirm;
     private Button btnBirth, btnJoin;
     private RadioGroup rgGender;
+    private RadioButton rbFemale, rbMale;
     private TextView txtAgree;
 
     private String nameFirst, nameLast, email;
@@ -60,10 +62,14 @@ public class JoinActivity extends AppCompatActivity {
         etPasswordConfirm = (EditText)findViewById(R.id.new_password_confirm);
         btnBirth = (Button)findViewById(R.id.new_birthday);
         rgGender = (RadioGroup)findViewById(R.id.new_gender);
+        rbFemale = (RadioButton)findViewById(R.id.gender_female);
+        rbMale = (RadioButton)findViewById(R.id.gender_male);
         txtAgree = (TextView)findViewById(R.id.new_agree);
         btnJoin = (Button)findViewById(R.id.btn_join_confirm);
 
         btnJoin.setEnabled(false);
+        rbFemale.setTag(1);
+        rbMale.setTag(2);
 
         etPasswordConfirm.setEnabled(isPassConfEnabled);
 
@@ -232,7 +238,7 @@ public class JoinActivity extends AppCompatActivity {
                 nameLast = etNameLast.getText().toString();
                 email = etEmail.getText().toString();
                 birthday = String.format("%04d-%02d-%02d", birthY, birthM, birthD);
-                gender = rgGender.getCheckedRadioButtonId();
+                gender = (int)findViewById(rgGender.getCheckedRadioButtonId()).getTag();
 
                 CheckDB checkDB = new CheckDB(email, Info.hash(password + email));
                 checkDB.execute();

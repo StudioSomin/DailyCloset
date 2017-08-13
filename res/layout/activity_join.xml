@@ -79,11 +79,13 @@
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="40dp"
+            android:id="@+id/gender_female"
             android:text="Female" />
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_marginLeft="30dp"
+            android:id="@+id/gender_male"
             android:text="Male"/>
     </RadioGroup>
 
