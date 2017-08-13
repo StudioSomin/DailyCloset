@@ -17,12 +17,4 @@
         android:id="@+id/img_logo"
         android:src="@drawable/logo_sample"
         android:scaleType="fitCenter"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/jay"
-        android:text="jay"
-        android:layout_below="@id/img_logo"/>
-
 </RelativeLayout>

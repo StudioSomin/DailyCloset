@@ -1,6 +1,7 @@
 package kr.ac.ssu.closet;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -225,6 +226,9 @@ public class JoinActivity extends AppCompatActivity {
                 new RegistDB(nameFirst, nameLast, email, Info.hash(password+email), birthday, gender).execute();
 //                Toast.makeText(JoinActivity.this, nameFirst +"/"+ nameLast +"/"+
 //                        email +"/"+ password+"/"+ gender, Toast.LENGTH_SHORT).show();
+
+                finish();
+
             }
         });
     }
